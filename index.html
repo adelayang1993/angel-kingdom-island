@@ -166,7 +166,7 @@ canvas#fx{position:absolute;inset:0;z-index:3;pointer-events:none;width:100%;hei
 <div class="stage" id="stage">
   <div class="scene" id="scene">
     <img src="assets/gate.jpg" alt="身穿白紗的少女背影，沿白色大理石長階梯走向頂端有天使之翼的光之門，右側浮空城堡與瀑布，四周雲海">
-    <video id="vid" src="assets/gate.mp4" poster="assets/gate.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+    <video id="vid" src="assets/gate.mp4" poster="assets/gate.jpg" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback aria-hidden="true"></video>
   </div>
   <div class="veil"></div>
   <canvas id="fx"></canvas>
@@ -375,9 +375,29 @@ function frame(){
   parts=parts.filter(p=>!p.burst||p.life>0);
   requestAnimationFrame(frame);
 }
+/* autoplay: phones only allow it for muted, inline video. Set those as properties too (iOS reads the
+   property, not just the attribute), retry once the file can play, and if the browser still refuses
+   (iOS Low Power Mode, Android data saver) start it on the visitor's first touch anywhere. */
+vid.muted=true; vid.defaultMuted=true; vid.playsInline=true;
+let tapArmed=false;
+function tryPlay(){
+  if(reduce || opened) return;
+  vid.muted=true;
+  const pr=vid.play(); if(pr && pr.catch) pr.catch(armTap);
+}
+function armTap(){
+  if(tapArmed) return; tapArmed=true;
+  const go=()=>{ ['pointerdown','touchstart','keydown','scroll'].forEach(ev=>removeEventListener(ev,go,true)); tapArmed=false; tryPlay(); };
+  ['pointerdown','touchstart','keydown','scroll'].forEach(ev=>addEventListener(ev,go,{capture:true,passive:true}));
+}
 if(reduce){ vid.pause(); vid.removeAttribute('autoplay'); cv.hidden=true; }
-else { requestAnimationFrame(frame); vid.play?.().catch(()=>{}); }
-document.addEventListener('visibilitychange',()=>{ if(!reduce){ document.hidden?vid.pause():vid.play().catch(()=>{}) } });
+else {
+  requestAnimationFrame(frame);
+  tryPlay();
+  vid.addEventListener('canplay',()=>{ if(vid.paused) tryPlay(); });
+  addEventListener('pageshow',()=>{ if(vid.paused) tryPlay(); });
+}
+document.addEventListener('visibilitychange',()=>{ if(reduce) return; document.hidden?vid.pause():tryPlay(); });
 })();
 </script>
 </body>
