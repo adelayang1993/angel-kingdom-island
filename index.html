@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="天使王國島・靈魂覺醒：揭開六道幻象，長按開啟天使之門。">
+<title>靈魂覺醒・天使之門</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+/* Layout: one full-bleed stage — looping gate video, a canvas of falling feathers, left illusion timeline, right title, hold-ring pinned to the doorway */
+:root{
+  --ivory:#fffaf1;
+  --pearl:#f6efe4;
+  --gold:#c9a45c;
+  --gold-deep:#8a6a2c;
+  --ink:#3b2f22;
+  --night:#141a2e;
+  --lav:#d9cfee;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --latin:"Cormorant Garamond","Noto Serif TC",Georgia,serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--night);color:var(--ivory);font-family:var(--serif);overflow:hidden;-webkit-tap-highlight-color:transparent}
+.stage{position:relative;height:100%;overflow:hidden;isolation:isolate}
+.scene{position:absolute;inset:0;transform-origin:var(--dx,50%) var(--dy,37%);transition:transform 2.6s cubic-bezier(.6,0,.2,1),filter 2.6s ease}
+.scene video,.scene img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;max-width:none}
+.scene img{z-index:0}.scene video{z-index:1}
+.veil{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,rgba(14,18,36,.82) 0%,rgba(14,18,36,.55) 18%,rgba(14,18,36,.18) 30%,rgba(14,18,36,0) 40%),
+             radial-gradient(60% 45% at 85% 18%,rgba(255,250,241,.55),rgba(255,250,241,0) 70%)}
+canvas#fx{position:absolute;inset:0;z-index:3;pointer-events:none;width:100%;height:100%}
+
+/* UI layer */
+.ui{position:absolute;inset:0;z-index:4;display:grid;grid-template-columns:minmax(220px,300px) 1fr minmax(260px,400px);grid-template-rows:auto 1fr auto;
+  padding-block:max(24px,env(safe-area-inset-top,0px)) max(24px,env(safe-area-inset-bottom,0px));
+  padding-left:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px));pointer-events:none;transition:opacity 1.2s ease}
+.ui>*{pointer-events:auto}
+.brand{grid-column:1;grid-row:1;display:flex;align-items:center;gap:12px}
+.brand svg{width:46px;height:30px;flex:none}
+.brand b{display:block;font-weight:400;font-size:22px;letter-spacing:.18em;color:var(--ivory);text-shadow:0 1px 12px rgba(201,164,92,.6)}
+.brand small{display:block;font-family:var(--latin);font-size:10.5px;letter-spacing:.32em;color:#e6d3a8;margin-top:2px}
+
+.phases{grid-column:3;grid-row:1;justify-self:end;display:flex;gap:14px;align-items:center;font-size:13px;letter-spacing:.2em;color:var(--ink);list-style:none;margin:0;padding:0}
+.phases li{opacity:.45;transition:opacity .6s}
+.phases li.on{opacity:1;color:var(--gold-deep)}
+.phases li+li::before{content:"×";margin-right:14px;color:var(--gold);opacity:.8}
+
+/* timeline */
+.timeline{grid-column:1;grid-row:2;align-self:center;list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;position:relative}
+.timeline::before{content:"";position:absolute;left:34px;top:30px;bottom:30px;width:1px;background:linear-gradient(var(--gold),rgba(201,164,92,.25))}
+.node{display:flex;align-items:center;gap:16px;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer;padding:0;width:100%}
+.orb{position:relative;flex:none;width:68px;height:68px;border-radius:50%;border:1.5px solid rgba(201,164,92,.75);display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 40%,rgba(40,48,78,.95),rgba(14,18,36,.95));box-shadow:0 0 0 4px rgba(14,18,36,.35);transition:box-shadow .5s,border-color .5s,transform .4s}
+.orb svg{width:34px;height:34px;stroke:#e9dcbd;fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.node .t{min-width:0}
+.node .n{font-family:var(--latin);font-size:15px;color:#e6d3a8;letter-spacing:.1em}
+.node .h{display:block;font-size:18px;letter-spacing:.14em;margin:1px 0 2px}
+.node .k{display:block;font-size:12px;letter-spacing:.14em;color:rgba(255,250,241,.72)}
+.node:hover .orb,.node:focus-visible .orb{transform:scale(1.06);border-color:var(--gold);box-shadow:0 0 0 4px rgba(14,18,36,.35),0 0 22px rgba(244,214,150,.55)}
+.node:focus-visible{outline:none}.node:focus-visible .h{text-decoration:underline;text-underline-offset:5px;text-decoration-color:var(--gold)}
+.node.seen .orb::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px dashed rgba(244,214,150,.55)}
+.node.active .orb{border-color:#f4d696;box-shadow:0 0 0 4px rgba(14,18,36,.35),0 0 30px rgba(244,214,150,.85)}
+.node.soul .orb{background:radial-gradient(circle at 50% 45%,#fff8e6,#e9cf98 60%,#b98d3e);border-color:#fff3d0}
+.node.soul .orb svg{stroke:var(--gold-deep)}
+.node.soul.ready .orb{animation:halo 2.4s ease-in-out infinite}
+@keyframes halo{50%{box-shadow:0 0 0 4px rgba(14,18,36,.25),0 0 40px 6px rgba(255,236,190,.9)}}
+
+/* title */
+.title{grid-column:3;grid-row:2;align-self:start;margin-top:5vh;text-align:center;color:var(--ink)}
+.title h1{font-weight:600;font-size:clamp(40px,4.6vw,68px);letter-spacing:.14em;margin:0;line-height:1.1;
+  background:linear-gradient(180deg,#5a4224,#3b2f22 60%,#7a5a26);-webkit-background-clip:text;background-clip:text;color:transparent;text-wrap:balance}
+.title .sub{display:flex;align-items:center;justify-content:center;gap:12px;font-size:17px;letter-spacing:.32em;color:var(--gold-deep);margin:10px 0 22px}
+.title .sub::before,.title .sub::after{content:"";width:42px;height:1px;background:var(--gold)}
+.title p{margin:0;font-size:15px;line-height:2;letter-spacing:.14em;text-shadow:0 0 14px rgba(255,250,241,.9)}
+
+/* detail card */
+.card{grid-column:3;grid-row:2;align-self:end;margin-bottom:12px;background:rgba(255,250,241,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  color:var(--ink);border:1px solid rgba(201,164,92,.55);border-radius:4px;padding:20px 22px;box-shadow:0 20px 50px -20px rgba(80,60,20,.35);
+  transition:opacity .5s,transform .5s}
+.card.hide{opacity:0;transform:translateY(10px);pointer-events:none}
+.card .n{font-family:var(--latin);font-style:italic;color:var(--gold-deep);font-size:15px;letter-spacing:.1em}
+.card h2{margin:2px 0 4px;font-size:21px;font-weight:600;letter-spacing:.16em}
+.card .k{font-size:12px;letter-spacing:.2em;color:var(--gold-deep)}
+.card p{margin:10px 0 0;font-size:14.5px;line-height:1.95;letter-spacing:.06em}
+.card .next{margin-top:14px;display:flex;justify-content:space-between;align-items:center;font-size:12px;letter-spacing:.14em;color:rgba(59,47,34,.65)}
+.card button{font:inherit;color:var(--gold-deep);background:none;border:0;border-bottom:1px solid var(--gold);padding:2px 0;cursor:pointer;letter-spacing:.14em}
+.card button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* CTA */
+.cta{grid-column:3;grid-row:3;justify-self:end;position:relative;width:170px;height:170px;border-radius:50%;border:1.5px solid rgba(201,164,92,.9);
+  background:radial-gradient(circle,rgba(255,250,241,.92),rgba(255,250,241,.7) 70%);color:var(--ink);font:inherit;cursor:pointer;display:grid;place-content:center;gap:6px;text-align:center;
+  box-shadow:0 0 0 6px rgba(255,250,241,.35),0 10px 40px -10px rgba(140,100,30,.5);transition:transform .4s,box-shadow .4s}
+.cta b{font-weight:600;font-size:19px;letter-spacing:.2em}
+.cta span{font-size:12px;letter-spacing:.2em;color:var(--gold-deep)}
+.cta i{font-style:normal;font-size:20px;color:var(--gold-deep)}
+.cta:hover,.cta:focus-visible{transform:scale(1.04);outline:none;box-shadow:0 0 0 6px rgba(255,250,241,.5),0 0 40px rgba(244,214,150,.8)}
+.foot{grid-column:1;grid-row:3;align-self:end;font-family:var(--latin);font-size:12px;letter-spacing:.3em;color:rgba(255,250,241,.55)}
+
+/* hold ring on the doorway */
+.gate{position:absolute;z-index:5;left:var(--gx,50%);top:var(--gy,40%);transform:translate(-50%,-50%);width:132px;height:132px;border-radius:50%;
+  border:0;background:none;padding:0;cursor:pointer;color:var(--ink);touch-action:none;user-select:none;-webkit-user-select:none;transition:opacity 1s}
+.gate svg.ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);overflow:visible}
+.gate .track{fill:rgba(255,250,241,.18);stroke:rgba(255,250,241,.85);stroke-width:1.2}
+.gate .prog{fill:none;stroke:#fff3cf;stroke-width:4;stroke-linecap:round;filter:drop-shadow(0 0 6px #ffe4a0)}
+.gate .core{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:6px;font-size:12.5px;letter-spacing:.16em;line-height:1.5;text-shadow:0 0 10px #fff}
+.gate .dot{width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 0 18px 6px rgba(255,240,200,.95);animation:breath 2.2s ease-in-out infinite}
+.gate:focus-visible{outline:2px dashed #fff3cf;outline-offset:6px}
+.gate.nudge{animation:nudge 1.2s ease 2}
+@keyframes breath{50%{transform:scale(1.35);box-shadow:0 0 28px 12px rgba(255,240,200,.95)}}
+@keyframes nudge{30%{transform:translate(-50%,-50%) scale(1.15)}60%{transform:translate(-50%,-50%) scale(.97)}}
+
+/* flash + finale */
+.flash{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0;background:radial-gradient(circle at var(--gx,50%) var(--gy,40%),#fff 0%,#fff8e4 35%,rgba(255,240,205,.9) 70%);transition:opacity 1.6s ease}
+.finale{position:absolute;inset:0;z-index:7;display:grid;place-content:center;text-align:center;gap:18px;color:var(--ink);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.finale .eyebrow{font-family:var(--latin);font-size:13px;letter-spacing:.4em;color:var(--gold-deep)}
+.finale h2{margin:0;font-weight:600;font-size:clamp(34px,5vw,60px);letter-spacing:.16em;text-wrap:balance}
+.finale p{margin:0 auto;max-width:28em;font-size:16px;line-height:2.1;letter-spacing:.12em}
+.finale button{justify-self:center;margin-top:8px;font:inherit;font-size:14px;letter-spacing:.24em;color:var(--gold-deep);background:rgba(255,255,255,.5);border:1px solid var(--gold);border-radius:999px;padding:10px 26px;cursor:pointer}
+.finale button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.finale>*{opacity:0;transform:translateY(12px);transition:opacity 1.2s ease,transform 1.2s ease}
+.finale{pointer-events:none;visibility:hidden;transition:visibility 0s 1.2s}
+.opened .finale{pointer-events:auto;visibility:visible;transition:none}
+.opened .finale>*{opacity:1;transform:none}
+.opened .finale>*:nth-child(2){transition-delay:.3s}.opened .finale>*:nth-child(3){transition-delay:.7s}.opened .finale>*:nth-child(4){transition-delay:1.2s}
+.opened .flash{opacity:1}
+.opened .ui,.opened .gate{opacity:0;pointer-events:none}
+.opened .scene{transform:scale(3.2);filter:brightness(1.6) saturate(.8)}
+
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* phone */
+@media (max-width:820px){
+  .ui{grid-template-columns:1fr;grid-template-rows:auto auto 1fr auto auto;
+    padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:max(14px,env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-bottom,0px))}
+  .veil{background:linear-gradient(180deg,rgba(255,250,241,.6) 0%,rgba(255,250,241,0) 26%,rgba(14,18,36,0) 62%,rgba(14,18,36,.8) 100%)}
+  .brand{grid-column:1;grid-row:1}
+  .brand b{color:var(--ink);text-shadow:none;font-size:18px}.brand small{color:var(--gold-deep)}
+  .phases{display:none}
+  .title{grid-column:1;grid-row:2;margin-top:8px}
+  .title h1{font-size:34px}.title .sub{font-size:13px;margin:6px 0 0}.title p{display:none}
+  .card{grid-column:1;grid-row:4;margin:0 0 10px;padding:14px 16px}
+  .card p{font-size:13.5px;line-height:1.8}
+  .timeline{grid-column:1;grid-row:5;flex-direction:row;gap:6px;overflow-x:auto;scrollbar-width:none;align-self:end}
+  .timeline::before{display:none}
+  .node{flex-direction:column;gap:4px;width:auto;flex:1 0 54px}
+  .orb{width:46px;height:46px}.orb svg{width:24px;height:24px}
+  .node .t{text-align:center}.node .n,.node .k{display:none}.node .h{font-size:11.5px;letter-spacing:.06em;white-space:nowrap}
+  .cta,.foot{display:none}
+  .gate{width:112px;height:112px}
+}
+@media (prefers-reduced-motion:reduce){
+  .scene,.flash,.finale>*{transition:none}
+  .gate .dot,.node.soul.ready .orb,.gate.nudge{animation:none}
+  .opened .scene{transform:none}
+}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="scene" id="scene">
+    <img src="assets/gate.jpg" alt="身穿白紗的少女背影，沿白色大理石長階梯走向頂端有天使之翼的光之門，右側浮空城堡與瀑布，四周雲海">
+    <video id="vid" src="assets/gate.mp4" poster="assets/gate.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+  </div>
+  <div class="veil"></div>
+  <canvas id="fx"></canvas>
+
+  <div class="ui">
+    <div class="brand">
+      <svg viewBox="0 0 46 30" aria-hidden="true"><path d="M2 26C10 23 18 16 24 4c-1 9-5 16-11 21 6-2 12-6 17-13-2 7-7 12-14 15 6 0 12-2 18-7-5 6-12 9-21 9z" fill="#f2e3bd" opacity=".9"/></svg>
+      <div><b>天使王國島</b><small>ANGEL KINGDOM ISLAND</small></div>
+    </div>
+
+    <ol class="phases" aria-label="旅程階段">
+      <li id="ph1" class="on">揭開幻象</li><li id="ph2">記起自己</li><li id="ph3">穿越光之門</li>
+    </ol>
+
+    <ol class="timeline" id="timeline" aria-label="六道幻象"></ol>
+
+    <div class="title">
+      <h1>靈魂覺醒</h1>
+      <div class="sub">迎向真正的你</div>
+      <p>當你願意放下那些不再屬於你的故事，<br>光，會帶你回到靈魂原本的地方。</p>
+    </div>
+
+    <section class="card hide" id="card" aria-live="polite">
+      <div class="n" id="cN"></div>
+      <h2 id="cH"></h2>
+      <div class="k" id="cK"></div>
+      <p id="cP"></p>
+      <div class="next"><span id="cCount"></span><button type="button" id="cNext">下一道</button></div>
+    </section>
+
+    <button class="cta" id="cta" type="button" aria-label="穿越光之門，前往天使王國島">
+      <b>穿越光之門</b><span>前往天使王國島</span><i aria-hidden="true">→</i>
+    </button>
+    <div class="foot">ANIMA · LUX · DOMUS</div>
+  </div>
+
+  <button class="gate" id="gate" type="button" aria-label="長按開啟天使之門（鍵盤：按住空白鍵）">
+    <svg class="ring" viewBox="0 0 132 132" aria-hidden="true">
+      <circle class="track" cx="66" cy="66" r="62"/>
+      <circle class="prog" id="prog" cx="66" cy="66" r="62" stroke-dasharray="389.6" stroke-dashoffset="389.6"/>
+    </svg>
+    <span class="core"><span class="dot"></span><span>長按開啟<br>天使之門</span></span>
+  </button>
+
+  <div class="flash"></div>
+  <div class="finale" id="finale" aria-hidden="true">
+    <div class="eyebrow">WELCOME HOME</div>
+    <h2>歡迎回到天使王國島</h2>
+    <p>你從來沒有離開光。<br>那些故事只是暫時借住的雲，現在，你記起自己了。</p>
+    <button type="button" id="again">再走一次</button>
+  </div>
+</div>
+
+<script>
+(()=>{
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = id => document.getElementById(id);
+const stage=$('stage'), scene=$('scene'), vid=$('vid');
+
+/* ---------- illusions ---------- */
+const icons={
+ earth:'<circle cx="17" cy="17" r="12"/><path d="M5 17h24M17 5c4 4 4 20 0 24M17 5c-4 4-4 20 0 24"/>',
+ city:'<path d="M5 29V15h6v14M11 29V8h7v21M18 29V12h5v17M23 29V18h6v11M3 29h28"/><path d="M14 12h1M14 16h1M14 20h1"/>',
+ cloud:'<path d="M9 24a6 6 0 1 1 2-11.6A7 7 0 0 1 24.5 14 5 5 0 1 1 25 24z"/><path d="M13 28l-1.5 3M19 28l-1.5 3"/>',
+ pair:'<circle cx="12" cy="11" r="4"/><circle cx="23" cy="11" r="4"/><path d="M5 28c0-5 3-9 7-9s7 4 7 9M16 28c0-5 3-9 7-9s7 4 7 9"/>',
+ lock:'<rect x="9" y="15" width="16" height="13" rx="2"/><path d="M12 15v-4a5 5 0 0 1 10 0v4M17 20v3"/>',
+ feather:'<path d="M27 5C15 7 8 16 7 29M27 5c-2 9-8 16-17 19M13 18l7-1M10 23l6-1"/>'
+};
+const steps=[
+ {h:'地球體驗',k:'學習・感受・體驗',i:'earth',p:'你來到地球，是為了親身感受。喜悅和難題都是靈魂選來練習的功課，沒有一段是白走的路。'},
+ {h:'物質幻象',k:'財富・名利・外在成就',i:'city',p:'擁有的東西會來，也會走。它們可以陪你一段路，但不能替你回答「我是誰」。'},
+ {h:'情緒幻象',k:'恐懼・焦慮・匱乏',i:'cloud',p:'情緒像雲，會飄過，也會散去。你不是那片雲，你是看著雲經過的整片天空。'},
+ {h:'關係幻象',k:'控制・比較・期待',i:'pair',p:'你不需要別人點頭才算完整。放下比較與控制，關係才有空間變得真實。'},
+ {h:'信念幻象',k:'限制・自我懷疑',i:'lock',p:'「我不夠好」只是一句被重複太多次的話。把它放下，你會發現門一直沒有上鎖。'},
+ {h:'靈魂覺醒',k:'記起自己的光',i:'feather',p:'五道幻象都看見了。現在，到光之門前長按光圈，穿過去，回到靈魂原本的地方。',soul:true}
+];
+const tl=$('timeline'); const seen=new Set(); let cur=-1;
+steps.forEach((s,i)=>{
+  const li=document.createElement('li');
+  li.innerHTML=`<button class="node${s.soul?' soul':''}" type="button" data-i="${i}">
+    <span class="orb"><svg viewBox="0 0 34 34" aria-hidden="true">${icons[s.i]}</svg></span>
+    <span class="t"><span class="n">0${i+1}</span><span class="h">${s.h}</span><span class="k">${s.k}</span></span></button>`;
+  tl.appendChild(li);
+});
+const nodes=[...tl.querySelectorAll('.node')];
+function show(i){
+  cur=i; seen.add(i); const s=steps[i];
+  nodes.forEach((n,j)=>{n.classList.toggle('active',j===i);n.classList.toggle('seen',seen.has(j)&&j!==5);n.setAttribute('aria-pressed',j===i)});
+  $('cN').textContent='0'+(i+1); $('cH').textContent=s.h; $('cK').textContent=s.k; $('cP').textContent=s.p;
+  const n5=[0,1,2,3,4].filter(j=>seen.has(j)).length;
+  $('cCount').textContent = i===5 ? '準備好了就長按光圈' : `已看見 ${n5} / 5 道幻象`;
+  $('cNext').textContent = i<4 ? '下一道' : i===4 ? '記起自己' : '前往光之門';
+  $('card').classList.remove('hide');
+  if(n5===5) nodes[5].classList.add('ready');
+  $('ph1').classList.toggle('on', i<5); $('ph2').classList.toggle('on', i===5);
+}
+tl.addEventListener('click',e=>{const b=e.target.closest('.node'); if(b) show(+b.dataset.i)});
+$('cNext').addEventListener('click',()=>{ if(cur<5) show(cur+1); else nudgeGate(); });
+$('cta').addEventListener('click',nudgeGate);
+function nudgeGate(){const g=$('gate'); g.classList.remove('nudge'); void g.offsetWidth; g.classList.add('nudge'); g.focus({preventScroll:true});}
+
+/* ---------- the ring rides on the doorway ----------
+   The loop has a slow camera drift, so the gate's crown was tracked frame by frame (8 fps, normalised x,y).
+   The ring sits in the upper doorway, a fixed distance below the crown, above the woman's head. */
+const AR=1536/1024, FPS=8, DROP=.09;
+const TRACK=[[.5,.219],[.501,.219],[.501,.219],[.499,.219],[.495,.217],[.49,.215],[.478,.211],[.462,.207],[.443,.205],[.426,.193],
+ [.406,.182],[.387,.17],[.368,.164],[.353,.156],[.346,.15],[.348,.15],[.353,.15],[.361,.152],[.37,.154],[.38,.158],
+ [.392,.16],[.404,.164],[.417,.168],[.428,.174],[.44,.178],[.451,.184],[.46,.189],[.469,.193],[.477,.197],[.483,.201],
+ [.488,.205],[.493,.209],[.497,.211],[.501,.215],[.504,.217],[.507,.219],[.508,.223],[.509,.225],[.51,.227],[.504,.229]];
+function doorAt(t){
+  const f=((t||0)*FPS)%TRACK.length, i=Math.floor(f), u=f-i, a=TRACK[i], b=TRACK[(i+1)%TRACK.length];
+  return [a[0]+(b[0]-a[0])*u, a[1]+(b[1]-a[1])*u+DROP];
+}
+let frozen=false;
+function place(){
+  if(frozen) return;
+  const W=stage.clientWidth,H=stage.clientHeight;
+  let w,h; if(W/H>AR){w=W;h=W/AR}else{h=H;w=H*AR}
+  const [nx,ny]=doorAt(vid.paused&&vid.currentTime===0?0:vid.currentTime);
+  const x=(W-w)/2+nx*w, y=(H-h)/2+ny*h;
+  stage.style.setProperty('--gx',x+'px'); stage.style.setProperty('--gy',y+'px');
+  scene.style.setProperty('--dx',x+'px'); scene.style.setProperty('--dy',y+'px');
+}
+addEventListener('resize',place); place();
+(function follow(){ place(); requestAnimationFrame(follow); })();
+
+/* ---------- hold to open ---------- */
+const gate=$('gate'), prog=$('prog'), C=389.6, HOLD=1800;
+let p=0, holding=false, last=0, opened=false, raf=0;
+function tick(t){
+  const dt=last?t-last:16; last=t;
+  p += (holding? dt/HOLD : -dt/(HOLD*0.6));
+  p=Math.max(0,Math.min(1,p));
+  prog.style.strokeDashoffset = C*(1-p);
+  fx.boost = p;
+  if(p>=1 && !opened){ open(); return; }
+  if(holding || p>0) raf=requestAnimationFrame(tick); else {last=0; raf=0;}
+}
+function start(e){ if(opened) return; if(e) e.preventDefault(); holding=true; if(!raf){last=0; raf=requestAnimationFrame(tick);} if(navigator.vibrate) try{navigator.vibrate(10)}catch(_){} }
+function stop(){ holding=false; if(!raf && p>0){last=0; raf=requestAnimationFrame(tick);} }
+gate.addEventListener('pointerdown',e=>{gate.setPointerCapture?.(e.pointerId); start(e)});
+['pointerup','pointercancel','lostpointercapture'].forEach(ev=>gate.addEventListener(ev,stop));
+gate.addEventListener('contextmenu',e=>e.preventDefault());
+gate.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter') && !e.repeat){ e.preventDefault(); start(); } });
+gate.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') stop(); });
+
+function open(){
+  opened=true; frozen=true; holding=false; cancelAnimationFrame(raf); raf=0;
+  fx.burst();
+  stage.classList.add('opened');
+  $('ph3').classList.add('on'); $('ph1').classList.remove('on'); $('ph2').classList.remove('on');
+  $('finale').setAttribute('aria-hidden','false');
+  setTimeout(()=>$('again').focus({preventScroll:true}), reduce?0:1800);
+}
+$('again').addEventListener('click',()=>{
+  opened=false; frozen=false; p=0; prog.style.strokeDashoffset=C; fx.boost=0;
+  stage.classList.remove('opened'); $('finale').setAttribute('aria-hidden','true');
+  seen.clear(); cur=-1; nodes.forEach(n=>n.classList.remove('active','seen','ready'));
+  $('card').classList.add('hide'); $('ph1').classList.add('on'); $('ph2').classList.remove('on'); $('ph3').classList.remove('on');
+});
+
+/* ---------- feathers & light motes ---------- */
+const cv=$('fx'), ctx=cv.getContext('2d');
+const fx={boost:0,burst(){}}; let parts=[], W=0,H=0,dpr=1;
+function size(){dpr=Math.min(devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+addEventListener('resize',size); size();
+const rnd=(a,b)=>a+Math.random()*(b-a);
+function spawn(kind,x,y){
+  return kind==='f'
+   ? {k:'f',x:x??rnd(0,W),y:y??rnd(-H*.2,-10),s:rnd(9,20),vx:rnd(-.25,.25),vy:rnd(.25,.6),r:rnd(0,6.28),vr:rnd(-.01,.01),sw:rnd(0,6.28),a:rnd(.55,.9)}
+   : {k:'m',x:x??rnd(0,W),y:y??rnd(0,H),s:rnd(.8,2.4),vx:rnd(-.12,.12),vy:rnd(-.35,-.08),tw:rnd(0,6.28),a:rnd(.35,.9),life:1};
+}
+const area=()=>Math.max(1,(W*H)/(1280*800));
+function seed(){parts=[];const a=area();for(let i=0;i<14*a;i++)parts.push(spawn('f',undefined,rnd(0,H)));for(let i=0;i<70*a;i++)parts.push(spawn('m'))}
+seed();
+function feather(p){
+  ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.globalAlpha=p.a;
+  const s=p.s,g=ctx.createLinearGradient(0,-s,0,s);g.addColorStop(0,'rgba(255,255,255,.95)');g.addColorStop(1,'rgba(246,234,210,.7)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(0,-s);ctx.bezierCurveTo(s*.55,-s*.5,s*.45,s*.55,0,s);ctx.bezierCurveTo(-s*.4,s*.5,-s*.5,-s*.45,0,-s);ctx.fill();
+  ctx.strokeStyle='rgba(201,164,92,.55)';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(0,-s*.9);ctx.lineTo(0,s*1.25);ctx.stroke();ctx.restore();
+}
+fx.burst=()=>{const gx=parseFloat(getComputedStyle(stage).getPropertyValue('--gx'))||W/2,gy=parseFloat(getComputedStyle(stage).getPropertyValue('--gy'))||H/2;
+  for(let i=0;i<160;i++){const m=spawn('m',gx,gy),a=rnd(0,6.28),v=rnd(1.5,7);m.vx=Math.cos(a)*v;m.vy=Math.sin(a)*v;m.s=rnd(1.2,3.4);m.life=1;m.burst=true;parts.push(m)}};
+function frame(){
+  ctx.clearRect(0,0,W,H); ctx.globalCompositeOperation='lighter';
+  const gx=parseFloat(stage.style.getPropertyValue('--gx'))||W/2, gy=parseFloat(stage.style.getPropertyValue('--gy'))||H/2;
+  for(const p of parts){
+    if(p.k==='m'){
+      if(fx.boost>0 && !p.burst){const dx=gx-p.x,dy=gy-p.y,d=Math.hypot(dx,dy)+1;p.vx+=dx/d*.05*fx.boost;p.vy+=dy/d*.05*fx.boost}
+      p.x+=p.vx;p.y+=p.vy;p.tw+=.05;
+      if(p.burst){p.vx*=.985;p.vy*=.985;p.life-=.006}
+      else{p.vx*=.995;p.vy=p.vy*.995-.002}
+      if(!p.burst&&(p.y<-10||p.x<-10||p.x>W+10||Math.hypot(gx-p.x,gy-p.y)<8)) Object.assign(p,spawn('m',undefined,H+5));
+      const al=p.a*(.6+.4*Math.sin(p.tw))*(p.burst?p.life:1);
+      const r=p.s*(1+fx.boost*.8);
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r*4);g.addColorStop(0,`rgba(255,244,214,${al})`);g.addColorStop(1,'rgba(255,230,170,0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,r*4,0,6.28);ctx.fill();
+    }
+  }
+  ctx.globalCompositeOperation='source-over';
+  for(const p of parts){ if(p.k!=='f')continue;
+    p.sw+=.012;p.x+=p.vx+Math.sin(p.sw)*.45;p.y+=p.vy;p.r+=p.vr+Math.sin(p.sw)*.004;
+    if(p.y>H+30) Object.assign(p,spawn('f'));
+    feather(p);
+  }
+  parts=parts.filter(p=>!p.burst||p.life>0);
+  requestAnimationFrame(frame);
+}
+if(reduce){ vid.pause(); vid.removeAttribute('autoplay'); cv.hidden=true; }
+else { requestAnimationFrame(frame); vid.play?.().catch(()=>{}); }
+document.addEventListener('visibilitychange',()=>{ if(!reduce){ document.hidden?vid.pause():vid.play().catch(()=>{}) } });
+})();
+</script>
+</body>
+</html>
