@@ -17,6 +17,8 @@
 | `index.html` | 頁面（HTML、CSS、JavaScript 都在同一個檔案） |
 | `assets/gate.mp4` | Midjourney 生成的 5 秒循環背景影片（768×512） |
 | `assets/gate.jpg` | 影片載入前的預覽圖，也是減少動態設定下的靜態背景 |
+| `assets/gate-m.mp4` | 手機直式專用影片：裁出手機畫面看得到的中段（原影片 x 170–570），放大到 1080 寬並降噪、銳化 |
+| `assets/gate-m.jpg` | 手機直式專用預覽圖 |
 
 ## 在本機預覽
 
