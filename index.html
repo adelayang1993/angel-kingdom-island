@@ -240,7 +240,8 @@ button{font:inherit;color:inherit}
   .top{padding:max(12px,env(safe-area-inset-top,0px)) var(--pad-r) 0 var(--pad-l)}
   .foot{font-size:10.5px;letter-spacing:.04em;padding-bottom:max(8px,env(safe-area-inset-bottom,0px))}
   body[data-ch="1"] .foot{display:none}
-  #ch1 .cta{bottom:max(22px,calc(env(safe-area-inset-bottom,0px) + 14px))}
+  #ch1 .cta{bottom:max(20px,calc(env(safe-area-inset-bottom,0px) + 12px));padding:10px 22px;font-size:14px;gap:12px;letter-spacing:.22em}
+  #ch1 .cta i{font-size:17px}
   .logo{margin-left:-4px}.logo img{height:36px}
   .ctrl span{display:none}.ctrl{padding:8px}
   .rail{right:max(6px,env(safe-area-inset-right,0px));gap:0}
@@ -749,8 +750,8 @@ chapters[1]=(()=>{
     const f=fit(img); [ex,ey]=toScreen(f,EARTH.x,EARTH.y); er=EARTH.r*f.s;
     if(PHONE.matches && R){
       const cp=sec.querySelector('.copy').getBoundingClientRect(), bt=sec.querySelector('.cta').getBoundingClientRect(), top=sec.getBoundingClientRect().top;
-      const y0=cp.bottom-top+28, y1=(bt.top>0?bt.top-top:f.H-90)-22, room=Math.max(120,y1-y0);
-      er=Math.min(f.W*.44,room/2); ex=f.W*.5; ey=y0+room/2+Math.max(0,(room-2*er)*.25); }
+      const y0=cp.bottom-top+14, y1=(bt.top>0?bt.top-top:f.H-70)-12, room=Math.max(140,y1-y0);
+      er=Math.min(f.W*.5,room/2); ex=f.W*.5; ey=y0+room/2+Math.max(0,(room-2*er)*.3); }
     btn.style.left=(ex-er)+'px'; btn.style.top=(ey-er)+'px'; btn.style.width=btn.style.height=(2*er)+'px';
     if(!R) return; R.setSize(f.W,f.H,false); cam.left=0;cam.right=f.W;cam.top=0;cam.bottom=-f.H;cam.updateProjectionMatrix();
     if(!descending){ [earth,clouds,atmo].forEach(m=>{m.position.set(ex,-ey,0);m.scale.setScalar(er);}); }
