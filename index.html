@@ -37,7 +37,7 @@ button{font:inherit;color:inherit}
 .top>*{pointer-events:auto}
 .top::before{content:"";position:absolute;z-index:-1;left:0;right:0;top:0;height:calc(100% + 40px);pointer-events:none;background:linear-gradient(rgba(10,12,30,.4),rgba(10,12,30,0))}
 .logo{display:block;line-height:0;margin-left:-8px}
-.logo img{height:clamp(62px,6.4vw,86px);width:auto;max-width:none;filter:drop-shadow(0 1px 5px rgba(10,12,30,.4))}
+.logo img{height:clamp(56px,5.6vw,76px);width:auto;max-width:none;filter:drop-shadow(0 1px 5px rgba(10,12,30,.4))}
 .ctrls{display:flex;align-items:center;gap:8px}
 .ctrl{display:flex;align-items:center;gap:7px;background:none;border:0;padding:8px 10px;border-radius:999px;cursor:pointer;font-size:15px;letter-spacing:.1em;color:var(--ivory);text-shadow:0 1px 8px rgba(0,0,0,.35)}
 .ctrl svg{width:19px;height:19px;flex:none}
@@ -238,7 +238,7 @@ button{font:inherit;color:inherit}
 @media (max-width:820px){
   .top{padding:max(12px,env(safe-area-inset-top,0px)) var(--pad-r) 0 var(--pad-l)}
   .foot{font-size:10.5px;letter-spacing:.04em;padding-bottom:max(8px,env(safe-area-inset-bottom,0px))}
-  .logo{margin-left:-6px}.logo img{height:46px}
+  .logo{margin-left:-4px}.logo img{height:42px}
   .ctrl span{display:none}.ctrl{padding:8px}
   .rail{right:max(6px,env(safe-area-inset-right,0px));gap:0}
   .rail button{width:30px;height:32px;font-size:0}
@@ -287,12 +287,12 @@ button{font:inherit;color:inherit}
 <header class="top">
   <a class="logo" href="#ch1"><img src="assets/logo.webp" width="760" height="258" alt="天使王國島 Angel Kingdom Island"></a>
   <div class="ctrls">
-    <button class="ctrl" id="musicBtn" type="button" aria-pressed="false">
+    <button class="ctrl" id="musicBtn" type="button" aria-pressed="true">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path class="on-ic" d="M9 18V5l11-2v13" fill="none" stroke="currentColor" stroke-width="1.8"/><circle class="on-ic" cx="6.5" cy="18" r="2.6" fill="currentColor"/><circle class="on-ic" cx="17.5" cy="16" r="2.6" fill="currentColor"/>
         <path class="off-ic" d="M9 18V5l11-2v13" fill="none" stroke="currentColor" stroke-width="1.8"/><circle class="off-ic" cx="6.5" cy="18" r="2.6" fill="currentColor"/><circle class="off-ic" cx="17.5" cy="16" r="2.6" fill="currentColor"/></svg>
       <span data-t="music">音樂</span>
     </button>
-    <button class="ctrl" id="sfxBtn" type="button" aria-pressed="true">
+    <button class="ctrl" id="sfxBtn" type="button" aria-pressed="false">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="on-ic" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="off-ic" d="M16.5 9.5l5 5m0-5l-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       <span data-t="sfx">音效</span>
     </button>
@@ -316,9 +316,9 @@ button{font:inherit;color:inherit}
     <div class="scrim"></div>
     <div class="copy">
       <div class="eyebrow" data-t="c1eb">A Journey Back to Your Soul</div>
-      <h1 id="h1" data-t="c1h">你是否曾經想過，眼前所見，就是世界的全部嗎？</h1>
+      <h1 id="h1" data-t="c1h">你是否曾經想過，眼前一切所見，是真實嗎？</h1>
       <p data-t-html="c1p">在無垠的宇宙中，你帶著光而來。<br>現在，讓我們一起回到那個最初的自己。</p>
-      <div class="hint" data-t="c1hint">拖曳旋轉地球・點擊地球，來人間體驗。</div>
+      <div class="hint" data-t="c1hint">拖曳旋轉地球・來地球進行一場體驗。</div>
       <button class="cta" type="button" data-go="descend"><span data-t="c1cta">開始旅程</span><i aria-hidden="true">→</i></button>
     </div>
   </section>
@@ -332,7 +332,7 @@ button{font:inherit;color:inherit}
       <h2 class="big" id="h2" data-t="c2h">降臨人間</h2>
       <div class="sub" data-t="c2s">進入現實世界</div>
       <div class="en">Entering the Human World</div>
-      <p data-t-html="c2p">在所有的體驗中，我們體驗與學習，相遇與別離，<br>每一個過程，都是靈魂的養分。</p>
+      <p data-t-html="c2p">我們在每次選擇中去體驗與學習，<br>每一次相遇，都是與自己相遇。<br>每一個過程，都是靈魂的養分。</p>
       <button class="cta" type="button" data-go="3"><span data-t="c2cta">繼續前行</span><i aria-hidden="true">→</i></button>
     </div>
     <ul class="themes" id="themes"></ul>
@@ -460,9 +460,9 @@ const hasGL = !!window.THREE && (()=>{try{const c=document.createElement('canvas
 const I18N={
 zh:{brand:'天使王國島',music:'音樂',sfx:'音效',close:'關閉',
  rail:['宇宙與地球','降臨人間','幻象之境','五重帷幕','靈魂之鏡','天使之門'],
- c1eb:'A Journey Back to Your Soul',c1h:'你是否曾經想過，眼前所見，就是世界的全部嗎？',
- c1p:'在無垠的宇宙中，你帶著光而來。<br>現在，讓我們一起回到那個最初的自己。',c1hint:'拖曳旋轉地球・點擊地球，來人間體驗。',c1cta:'開始旅程',earthAria:'點擊地球，穿越大氣層降臨人間',
- c2h:'降臨人間',c2s:'進入現實世界',c2p:'在所有的體驗中，我們體驗與學習，相遇與別離，<br>每一個過程，都是靈魂的養分。',c2cta:'繼續前行',
+ c1eb:'A Journey Back to Your Soul',c1h:'你是否曾經想過，眼前一切所見，是真實嗎？',
+ c1p:'在無垠的宇宙中，你帶著光而來。<br>現在，讓我們一起回到那個最初的自己。',c1hint:'拖曳旋轉地球・來地球進行一場體驗。',c1cta:'開始旅程',earthAria:'點擊地球，穿越大氣層降臨人間',
+ c2h:'降臨人間',c2s:'進入現實世界',c2p:'我們在每次選擇中去體驗與學習，<br>每一次相遇，都是與自己相遇。<br>每一個過程，都是靈魂的養分。',c2cta:'繼續前行',
  themes:[['時間與選擇','Time and Choices','每一個當下，你都在選擇要成為誰。'],['相遇與關係','People and Connections','每一次相遇，都是一面映照自己的鏡子。'],['成長與覺醒','Growth and Awakening','跌倒與站起，都是靈魂長出光的方式。']],
  c3h:'幻象之境',c3s:'探索內在的五種幻象',c3p:'在現實與夢境的交界，五種幻象悄然顯現。<br>點擊任一幻象，展開探索，<br>看見隱藏在表象之下的真相。',c3cta:'走向五重帷幕',
  c3count:n=>`已探索 ${n} / 5 種幻象`,
@@ -479,9 +479,9 @@ zh:{brand:'天使王國島',music:'音樂',sfx:'音效',close:'關閉',
  finH:'歡迎回到天使王國島',finP:'你從來沒有離開光。<br>那些故事只是暫時借住的雲，現在，你記起自己了。',again:'再走一次天使之門',restart:'從地球重新出發'},
 en:{brand:'Angel Kingdom Island',music:'Music',sfx:'Sound',close:'Close',
  rail:['Cosmos & Earth','Descent','Realm of Illusions','Five Veils','Soul Mirror','Angel Gate'],
- c1eb:'A Journey Back to Your Soul',c1h:'Have you ever wondered whether what you see is the whole world?',
- c1p:'Across the boundless universe, you arrived carrying light.<br>Now, let us return together to who you first were.',c1hint:'Drag to turn the Earth · Tap it to come and experience life',c1cta:'Begin the Journey',earthAria:'Tap the Earth to pass through the atmosphere',
- c2h:'Into the Human World',c2s:'Entering everyday life',c2p:'Through everything we live, we experience and learn, meet and part.<br>Every step along the way nourishes the soul.',c2cta:'Keep Going',
+ c1eb:'A Journey Back to Your Soul',c1h:'Have you ever wondered whether everything you see is real?',
+ c1p:'Across the boundless universe, you arrived carrying light.<br>Now, let us return together to who you first were.',c1hint:'Drag to turn the Earth · Come to Earth for an experience',c1cta:'Begin the Journey',earthAria:'Tap the Earth to pass through the atmosphere',
+ c2h:'Into the Human World',c2s:'Entering everyday life',c2p:'In every choice we experience and learn.<br>Every meeting is a meeting with ourselves.<br>Every step along the way nourishes the soul.',c2cta:'Keep Going',
  themes:[['Time & Choices','Time and Choices','In every moment, you choose who to become.'],['People & Bonds','People and Connections','Every meeting is a mirror that shows you yourself.'],['Growth & Awakening','Growth and Awakening','Falling and rising are how a soul grows its light.']],
  c3h:'Realm of Illusions',c3s:'Five illusions within',c3p:'Where waking meets dreaming, five illusions appear.<br>Open any one of them<br>to see the truth beneath the surface.',c3cta:'Walk to the Five Veils',
  c3count:n=>`${n} of 5 illusions explored`,
@@ -526,7 +526,7 @@ const toScreen=(f,x,y)=>[f.ox+x*f.s, f.oy+y*f.s];
    Sound: an ambient pad and soft chimes, made in the browser
    ========================================================= */
 const Sound=(()=>{
-  let ac=null, master, musicBus, sfxBus, verb, musicOn=false, sfxOn=true, padTimer=0, sparkTimer=0;
+  let ac=null, master, musicBus, sfxBus, verb, musicOn=false, sfxOn=false, padTimer=0, sparkTimer=0;
   function init(){
     if(ac) return true;
     const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return false;
@@ -589,7 +589,11 @@ const Sound=(()=>{
     }
   };
 })();
-$('musicBtn').addEventListener('click',e=>{const on=Sound.setMusic(!Sound.music); e.currentTarget.setAttribute('aria-pressed',on);});
+// music is on by default; browsers only allow sound after the visitor's first tap or key, so it starts then
+let musicWanted=true;
+const kick=e=>{ if(e && e.target && e.target.closest && e.target.closest('#musicBtn')) return; ['pointerdown','keydown','touchstart'].forEach(ev=>removeEventListener(ev,kick,true)); if(musicWanted && !Sound.music) Sound.setMusic(true); };
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,kick,{capture:true,passive:true}));
+$('musicBtn').addEventListener('click',e=>{ const want=e.currentTarget.getAttribute('aria-pressed')!=='true'; musicWanted=want; Sound.setMusic(want); e.currentTarget.setAttribute('aria-pressed',want); });
 $('sfxBtn').addEventListener('click',e=>{Sound.setSfx(!Sound.sfx); e.currentTarget.setAttribute('aria-pressed',Sound.sfx); if(Sound.sfx) Sound.play('soft');});
 
 /* =========================================================
@@ -792,7 +796,7 @@ $('themes').addEventListener('click',e=>{const b=e.target.closest('button'); if(
 function layoutThemes(){
   const ul=$('themes'); if(PHONE.matches){ ul.style.left=ul.style.top=''; return; }
   const f=fit($('ch2').querySelector('.bg')); const [x0,y0]=toScreen(f,THEME_POS[0][0],THEME_POS[0][1]); const [x2]=toScreen(f,THEME_POS[2][0],0);
-  const gap=(x2-x0)/2; ul.style.gap=Math.max(8,gap-170)+'px'; ul.style.left=(x0-85)+'px'; ul.style.top=Math.min(y0-45,f.H-190)+'px';
+  const gap=(x2-x0)/2; ul.style.gap=Math.max(8,gap-170)+'px'; ul.style.left=(x0-85+Math.min(90,f.W*.055))+'px'; ul.style.top=Math.min(y0-110,f.H-280)+'px';
 }
 chapters[2]={ enter(o){ const s=$('ch2'); s.classList.remove('arrive'); if(o&&o.arrive&&!reduce){ void s.offsetWidth; s.classList.add('arrive'); } layoutThemes(); }, layout:layoutThemes };
 
