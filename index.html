@@ -206,6 +206,14 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .gflash{position:absolute;inset:0;z-index:7;pointer-events:none;opacity:0;background:radial-gradient(circle at var(--gx,50%) var(--gy,40%),#fff 0%,#fff8e4 35%,rgba(255,240,205,.9) 70%);transition:opacity 1.6s ease}
 .finale{position:absolute;inset:0;z-index:8;display:grid;place-content:center;text-align:center;gap:18px;color:var(--ink);visibility:hidden;pointer-events:none;
   padding-left:var(--pad-l);padding-right:var(--pad-r);transition:visibility 0s 1.2s}
+.finale .sigil{justify-self:center;width:clamp(120px,14vw,170px);height:auto;margin-bottom:2px;
+  filter:drop-shadow(0 0 1px rgba(150,108,40,.55)) drop-shadow(0 0 16px rgba(214,170,90,.5));animation:sigilSpin 90s linear infinite}
+body:has(#ch6.opened) .top::before,body:has(#ch6.opened) .foot::before{opacity:0}
+body:has(#ch6.opened) .foot{color:rgba(90,66,36,.75);text-shadow:none}
+body:has(#ch6.opened) .ctrl{color:var(--gold-deep);text-shadow:none}
+body:has(#ch6.opened) .rail button{color:rgba(138,106,44,.7);text-shadow:none}
+body:has(#ch6.opened) .logo img{filter:drop-shadow(0 0 1px rgba(120,86,30,.6)) drop-shadow(0 1px 6px rgba(120,86,30,.35))}
+@keyframes sigilSpin{to{rotate:360deg}}
 .finale .eb{font-family:var(--latin);font-size:14px;letter-spacing:.4em;color:var(--gold-deep)}
 .finale h2{margin:0;font-weight:600;font-size:clamp(32px,5vw,60px);letter-spacing:.16em;text-wrap:balance}
 .finale p{margin:0 auto;max-width:28em;font-size:16px;line-height:2.1;letter-spacing:.12em}
@@ -214,7 +222,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .finale>*{opacity:0;transform:translateY(12px);transition:opacity 1.2s ease,transform 1.2s ease}
 #ch6.opened .finale{visibility:visible;pointer-events:auto;transition:none}
 #ch6.opened .finale>*{opacity:1;transform:none}
-#ch6.opened .finale>*:nth-child(2){transition-delay:.3s}#ch6.opened .finale>*:nth-child(3){transition-delay:.7s}#ch6.opened .finale>*:nth-child(4){transition-delay:1.2s}
+#ch6.opened .finale>*:nth-child(2){transition-delay:.3s}#ch6.opened .finale>*:nth-child(3){transition-delay:.6s}#ch6.opened .finale>*:nth-child(4){transition-delay:1s}#ch6.opened .finale>*:nth-child(5){transition-delay:1.4s}
 #ch6.opened .gflash{opacity:1}
 #ch6.opened .copy,#ch6.opened .gate,#ch6.opened .scrim{opacity:0;pointer-events:none;transition:opacity 1s}
 #ch6.opened .scene{transform:scale(3.2);filter:brightness(1.6) saturate(.8)}
@@ -282,13 +290,14 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   .illchips{display:flex!important}
   #ch6 .copy{top:auto;bottom:max(50px,calc(env(safe-area-inset-bottom,0px) + 42px))}
   #ch6 .copy p{display:none}
+  .finale{gap:14px}.finale .sigil{width:118px}
   #ch6 .scrim{background:linear-gradient(180deg,rgba(14,18,36,.55) 0%,rgba(14,18,36,0) 22%,rgba(14,18,36,0) 52%,rgba(14,18,36,.82) 80%,rgba(14,18,36,.92) 100%)}
   .arch .plaque{display:none}
   .toast{bottom:max(110px,calc(env(safe-area-inset-bottom,0px) + 104px));white-space:normal;text-align:center;width:max-content;max-width:calc(100% - 32px)}
 }
 @media (prefers-reduced-motion:reduce){
   .ch,.ch.on,#ch1 .bg,#ch6 .scene,.gflash,.finale>*,#white{transition:none!important}
-  .hint::before,.lightpt .orb,.gate .dot,.cta.ready,.gate.nudge{animation:none!important}
+  .hint::before,.lightpt .orb,.gate .dot,.cta.ready,.gate.nudge,.finale .sigil{animation:none!important}
   #ch2.arrive .bg{animation:none}
   #ch6.opened .scene{transform:none}
 }
@@ -440,6 +449,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
     </button>
     <div class="gflash"></div>
     <div class="finale" id="finale" aria-hidden="true">
+      <img class="sigil" src="assets/metatron.webp" width="480" height="465" alt="" aria-hidden="true">
       <div class="eb">WELCOME HOME</div>
       <h2 data-t="finH">歡迎回到天使王國島</h2>
       <p data-t-html="finP">你從來沒有離開光，我們始終與你同在，<br>你記起你是誰了嗎？</p>
