@@ -916,19 +916,21 @@ chapters[4]=(()=>{
       float sx= uSide<0. ? x : W-x;
       float y=-margin+(1.-v)*(H+2.*margin);
       gl_Position=projectionMatrix*modelViewMatrix*vec4(sx,-y,0.,1.);}`;
-  const FS=`uniform vec3 uColor;uniform float uAlpha,uTime,uOpen,uDepth;varying vec2 vUv;varying float vFold;varying float vT;
-    float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+  // hashing without sin() of large numbers: GPUs lose precision there and the sparkles turn into jumping streaks
+  const FS=`uniform vec3 uColor;uniform float uAlpha,uTime,uOpen,uDepth;uniform vec2 uGrid;varying vec2 vUv;varying float vFold;varying float vT;
+    float h(vec2 p){vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}
     float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
     void main(){ float fold=vFold*.5+.5;
       vec3 c=uColor*(.86+.26*fold);
-      c+=vec3(1.,.97,.9)*pow(max(vFold,0.),14.)*.45;
-      float sheen=n2(vec2(vUv.x*6.,vUv.y*2.+uTime*.05+uDepth));
-      c+=sheen*.06;
+      c+=vec3(1.,.97,.9)*pow(max(vFold,0.),8.)*.28;
+      c+=n2(vec2(vUv.x*6.,vUv.y*2.+uTime*.05+uDepth))*.06;
       float emb=smoothstep(.06,.0,vT)*(.55+.45*n2(vec2(uDepth*3.,vUv.y*60.)));
       c=mix(c,vec3(1.,.86,.55),emb*.7);
-      float sp=step(.9975,h(floor(vUv*vec2(180.,110.))+floor(uTime*1.5+uDepth)))*(1.-uOpen*.5);
-      c+=sp*.9;
-      float a=uAlpha*(.62+.7*(1.-fold))+emb*.35+sp*.4;
+      vec2 g=vUv*uGrid; vec2 id=floor(g); vec2 lc=fract(g)-.5; float r=h(id+uDepth*17.31);
+      float tw=.5+.5*sin(uTime*(.8+r*1.6)+r*40.);
+      float sp=step(.986,r)*(1.-smoothstep(.12,.42,length(lc)))*tw*(1.-uOpen*.5);
+      c+=sp*.85;
+      float a=uAlpha*(.62+.7*(1.-fold))+emb*.35+sp*.35;
       a*=smoothstep(0.,.012,vT+.004);
       gl_FragColor=vec4(c,clamp(a,0.,.95));}`;
   function init(){
@@ -938,7 +940,7 @@ chapters[4]=(()=>{
     const geo=new THREE.PlaneGeometry(1,1,80,30);
     for(let L=4;L>=0;L--){ // back to front
       [-1,1].forEach(side=>{ const m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:false,side:THREE.DoubleSide,vertexShader:VS,fragmentShader:FS,
-        uniforms:{uRes:{value:new THREE.Vector2(1,1)},uOpen:{value:veilOpen[L]},uTime:{value:0},uSide:{value:side},uDepth:{value:L},uWob:{value:0},uColor:{value:new THREE.Vector3(...COLORS[L])},uAlpha:{value:ALPHA[L]}}});
+        uniforms:{uRes:{value:new THREE.Vector2(1,1)},uGrid:{value:new THREE.Vector2(120,120)},uOpen:{value:veilOpen[L]},uTime:{value:0},uSide:{value:side},uDepth:{value:L},uWob:{value:0},uColor:{value:new THREE.Vector3(...COLORS[L])},uAlpha:{value:ALPHA[L]}}});
         m.userData.L=L; mats.push(m); const mesh=new THREE.Mesh(geo,m); mesh.frustumCulled=false; mesh.renderOrder=10-L; scene.add(mesh); });
     }
     cv.addEventListener('pointerdown',e=>{ if(veilNext>4) return; drag={x:e.clientX,o:veilOpen[veilNext],L:veilNext,moved:0}; cv.setPointerCapture?.(e.pointerId); });
@@ -959,19 +961,20 @@ chapters[4]=(()=>{
   function layout(){
     layoutVeilCards(); const W=sec.clientWidth,H=sec.clientHeight;
     const lp=$('lightpt'); lp.style.left=W/2+'px'; lp.style.top=(PHONE.matches?H*.5:H*.42)+'px';
-    if(!R) return; R.setSize(W,H,false); cam.left=0;cam.right=W;cam.top=0;cam.bottom=-H;cam.updateProjectionMatrix(); mats.forEach(m=>m.uniforms.uRes.value.set(W,H));
+    if(!R) return; R.setSize(W,H,false); cam.left=0;cam.right=W;cam.top=0;cam.bottom=-H;cam.updateProjectionMatrix();
+    const gx=Math.max(40,Math.round((W/2+40)/7)), gy=Math.max(40,Math.round((H+80)/7)); mats.forEach(m=>{m.uniforms.uRes.value.set(W,H); m.uniforms.uGrid.value.set(gx,gy);});
   }
   function loop(now){
-    if(!running) return; const s=now/1000;
+    if(!running) return; const s=((now-tStart)/1000)%600;
     anim.forEach((a,L)=>{ if(!a) return; const k=clamp((now-a.t0)/a.ms,0,1); veilOpen[L]=lerp(a.from,a.to,ease(k)); if(k>=1){anim[L]=null; layoutVeilCards();} });
     wob*=.92;
     mats.forEach(m=>{ const L=m.userData.L; m.uniforms.uTime.value=reduce?0:s; m.uniforms.uOpen.value=veilOpen[L]; m.uniforms.uWob.value=drag&&drag.L===L?wob:0; });
     R.render(scene,cam); requestAnimationFrame(loop);
   }
-  let warmed=false;
+  let warmed=false, tStart=performance.now();
   function warm(){ if(warmed||!hasGL) return; warmed=true; init(); layout(); if(R){ R.compile(scene,cam); R.render(scene,cam); } }
   return { openNext, layout, warm,
-    enter(){ warm(); layout(); updateLightPt(); running=!!R; if(R) requestAnimationFrame(loop); },
+    enter(){ tStart=performance.now(); warm(); layout(); updateLightPt(); running=!!R; if(R) requestAnimationFrame(loop); },
     leave(){ setTimeout(()=>{ if(cur!==4) running=false; },1300); } };
 })();
 $('lightpt').addEventListener('click',()=>chapters[4].openNext());
