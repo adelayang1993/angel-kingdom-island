@@ -207,13 +207,13 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .finale{position:absolute;inset:0;z-index:8;display:grid;place-content:center;text-align:center;gap:18px;color:var(--ink);visibility:hidden;pointer-events:none;
   padding-left:var(--pad-l);padding-right:var(--pad-r);transition:visibility 0s 1.2s}
 .finale .sigil{justify-self:center;width:clamp(120px,14vw,170px);height:auto;margin-bottom:2px;
-  filter:drop-shadow(0 0 1px rgba(150,108,40,.55)) drop-shadow(0 0 16px rgba(214,170,90,.5));animation:sigilSpin 90s linear infinite}
+  filter:drop-shadow(0 0 1px rgba(150,108,40,.55)) drop-shadow(0 0 12px rgba(214,170,90,.4));animation:sigilGlow 4.5s ease-in-out infinite}
 body:has(#ch6.opened) .top::before,body:has(#ch6.opened) .foot::before{opacity:0}
 body:has(#ch6.opened) .foot{color:rgba(90,66,36,.75);text-shadow:none}
 body:has(#ch6.opened) .ctrl{color:var(--gold-deep);text-shadow:none}
 body:has(#ch6.opened) .rail button{color:rgba(138,106,44,.7);text-shadow:none}
 body:has(#ch6.opened) .logo img{filter:drop-shadow(0 0 1px rgba(120,86,30,.6)) drop-shadow(0 1px 6px rgba(120,86,30,.35))}
-@keyframes sigilSpin{to{rotate:360deg}}
+@keyframes sigilGlow{50%{filter:drop-shadow(0 0 1px rgba(150,108,40,.6)) drop-shadow(0 0 22px rgba(232,186,96,.85)) drop-shadow(0 0 44px rgba(255,214,140,.5))}}
 .finale .eb{font-family:var(--latin);font-size:14px;letter-spacing:.4em;color:var(--gold-deep)}
 .finale h2{margin:0;font-weight:600;font-size:clamp(32px,5vw,60px);letter-spacing:.16em;text-wrap:balance}
 .finale p{margin:0 auto;max-width:28em;font-size:16px;line-height:2.1;letter-spacing:.12em}
@@ -938,7 +938,7 @@ chapters[4]=(()=>{
       c=mix(c,vec3(1.,.86,.55),emb*.7);
       vec2 g=vUv*uGrid; vec2 id=floor(g); vec2 lc=fract(g)-.5; float r=h(id+uDepth*17.31);
       float tw=.5+.5*sin(uTime*(.8+r*1.6)+r*40.);
-      float sp=step(.986,r)*(1.-smoothstep(.12,.42,length(lc)))*tw*(1.-uOpen*.5);
+      float sp=step(.9955,r)*(1.-smoothstep(.12,.42,length(lc)))*tw*(1.-uOpen*.5);
       c+=sp*.85;
       float a=uAlpha*(.62+.7*(1.-fold))+emb*.35+sp*.35;
       a*=smoothstep(0.,.012,vT+.004);
