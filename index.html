@@ -630,6 +630,7 @@ function go(n,opt={}){
   to.classList.toggle('instant',!!opt.instant); to.classList.add('on');
   cur=n; markRail(); motes.mode(n); document.body.dataset.ch=n;
   chapters[n]?.enter?.(opt);
+  const nx=chapters[n+1]; if(nx&&nx.warm){ const go=()=>{ try{nx.warm()}catch(_){} }; setTimeout(()=>('requestIdleCallback' in window)?requestIdleCallback(go,{timeout:3000}):go(),1500); }
   if(location.hash!=='#ch'+n){ try{history.replaceState(null,'','#ch'+n)}catch(_){location.hash='ch'+n} }
   requestAnimationFrame(()=>{ from?.classList.remove('instant'); to.classList.remove('instant'); });
 }
@@ -649,7 +650,7 @@ const motes=(()=>{
   const r=(a,b)=>a+Math.random()*(b-a);
   const sp=(k,x,y)=>k==='f'?{k,x:x??r(0,W),y:y??r(-H*.2,-10),s:r(8,18),vx:r(-.25,.25),vy:r(.25,.6),rot:r(0,6.28),vr:r(-.01,.01),sw:r(0,6.28),a:r(.5,.85)}
                            :{k,x:x??r(0,W),y:y??r(0,H),s:r(.8,2.3),vx:r(-.12,.12),vy:r(-.32,-.06),tw:r(0,6.28),a:r(.3,.85)};
-  const MODES={1:{m:40,f:0,tint:'210,225,255'},2:{m:50,f:6,tint:'255,236,200'},3:{m:46,f:5,tint:'255,240,220'},4:{m:56,f:8,tint:'255,244,230'},5:{m:50,f:4,tint:'255,244,214'},6:{m:70,f:12,tint:'255,244,214'}};
+  const MODES={1:{m:40,f:0,tint:'210,225,255'},2:{m:50,f:6,tint:'255,236,200'},3:{m:46,f:5,tint:'255,240,220'},4:{m:60,f:0,tint:'255,246,232'},5:{m:50,f:4,tint:'255,244,214'},6:{m:70,f:12,tint:'255,244,214'}};
   function mode(n){ cfg=MODES[n]||cfg; const a=Math.max(1,(W*H)/(1280*800)); parts=[];
     for(let i=0;i<cfg.f*a;i++) parts.push(sp('f',undefined,r(0,H))); for(let i=0;i<cfg.m*a;i++) parts.push(sp('m')); }
   function feather(p){
@@ -932,7 +933,7 @@ chapters[4]=(()=>{
       gl_FragColor=vec4(c,clamp(a,0.,.95));}`;
   function init(){
     if(!hasGL || R) return;
-    R=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true}); R.setPixelRatio(Math.min(devicePixelRatio||1,2));
+    R=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:false,powerPreference:'high-performance'}); R.setPixelRatio(Math.min(devicePixelRatio||1,1.25));
     scene=new THREE.Scene(); cam=new THREE.OrthographicCamera(0,1,0,-1,-10,10);
     const geo=new THREE.PlaneGeometry(1,1,80,30);
     for(let L=4;L>=0;L--){ // back to front
@@ -967,8 +968,10 @@ chapters[4]=(()=>{
     mats.forEach(m=>{ const L=m.userData.L; m.uniforms.uTime.value=reduce?0:s; m.uniforms.uOpen.value=veilOpen[L]; m.uniforms.uWob.value=drag&&drag.L===L?wob:0; });
     R.render(scene,cam); requestAnimationFrame(loop);
   }
-  return { openNext, layout,
-    enter(){ init(); layout(); updateLightPt(); running=!!R; if(R) requestAnimationFrame(loop); },
+  let warmed=false;
+  function warm(){ if(warmed||!hasGL) return; warmed=true; init(); layout(); if(R){ R.compile(scene,cam); R.render(scene,cam); } }
+  return { openNext, layout, warm,
+    enter(){ warm(); layout(); updateLightPt(); running=!!R; if(R) requestAnimationFrame(loop); },
     leave(){ setTimeout(()=>{ if(cur!==4) running=false; },1300); } };
 })();
 $('lightpt').addEventListener('click',()=>chapters[4].openNext());
@@ -1065,8 +1068,10 @@ chapters[5]=(()=>{
     requestAnimationFrame(loop);
   }
   btn.addEventListener('click',awaken);
-  return { layout,
-    enter(){ init(); landed=true; awakened=false; portal=0; t0=performance.now(); landT=t0+(reduce?-4000:700); $('c5hint').textContent=t('c5ready'); $('bloom').classList.remove('go'); layout(); running=true; requestAnimationFrame(loop); },
+  let warmed=false;
+  function warm(){ if(warmed||!hasGL) return; warmed=true; init(); layout(); if(R){ R.compile(scene,cam); R.render(scene,cam); } }
+  return { layout, warm,
+    enter(){ warm(); landed=true; awakened=false; portal=0; t0=performance.now(); landT=t0+(reduce?-4000:700); $('c5hint').textContent=t('c5ready'); $('bloom').classList.remove('go'); layout(); running=true; requestAnimationFrame(loop); },
     leave(){ setTimeout(()=>{ if(cur!==5) running=false; },1300); } };
 })();
 
