@@ -187,13 +187,14 @@ button{font:inherit;color:inherit}
 #ch6 .scene img,#ch6 .scene video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;max-width:none}
 #ch6 .scene video{z-index:1}
 #ch6 .copy{top:52%}
-.gate{position:absolute;z-index:6;left:var(--gx,50%);top:var(--gy,40%);transform:translate(-50%,-50%);width:132px;height:132px;border-radius:50%;
+.gate{position:absolute;z-index:6;left:var(--gx,50%);top:var(--gy,40%);transform:translate(-50%,-50%);width:176px;height:176px;border-radius:50%;
   border:0;background:none;padding:0;cursor:pointer;color:var(--ink);touch-action:none;user-select:none;-webkit-user-select:none;transition:opacity 1s}
 .gate svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);overflow:visible}
 .gate .track{fill:rgba(255,250,241,.18);stroke:rgba(255,250,241,.85);stroke-width:1.2}
 .gate .prog{fill:none;stroke:#fff3cf;stroke-width:4;stroke-linecap:round;filter:drop-shadow(0 0 6px #ffe4a0)}
-.gate .core{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:6px;font-size:12.5px;letter-spacing:.16em;line-height:1.5;text-shadow:0 0 10px #fff}
-.gate .dot{width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 0 18px 6px rgba(255,240,200,.95);animation:dotb 2.2s ease-in-out infinite}
+.gate::before{content:"";position:absolute;inset:-22px;border-radius:50%}
+.gate .core{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:8px;font-size:15px;letter-spacing:.16em;line-height:1.5;text-shadow:0 0 10px #fff}
+.gate .dot{width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 0 18px 6px rgba(255,240,200,.95);animation:dotb 2.2s ease-in-out infinite}
 .gate.nudge{animation:nudge 1.2s ease 2}
 @keyframes dotb{50%{transform:scale(1.35);box-shadow:0 0 28px 12px rgba(255,240,200,.95)}}
 @keyframes nudge{30%{transform:translate(-50%,-50%) scale(1.15)}60%{transform:translate(-50%,-50%) scale(.97)}}
@@ -257,7 +258,8 @@ button{font:inherit;color:inherit}
   .themes b{font-size:13px;letter-spacing:.08em}.themes small{display:none}
   .themes .line{position:absolute;bottom:100%;left:0;right:0;max-width:none;margin-bottom:10px;padding:10px 14px;border-radius:8px;background:rgba(20,18,38,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
   .themes li{position:static}
-  .gate{width:112px;height:112px}
+  .gate{width:148px;height:148px}
+  .gate .core{font-size:13.5px}
   #ch1 .bg{object-position:0% 50%} #ch2 .bg{object-position:47% 50%} #ch3 .bg{object-position:51% 50%} #ch4 .bg{object-position:55% 50%} #ch5 .bg{object-position:59% 50%}
   .illchips{display:flex!important}
   #ch6 .copy{top:auto;bottom:max(26px,calc(env(safe-area-inset-bottom,0px) + 18px))}
@@ -940,44 +942,12 @@ $('lightpt').addEventListener('click',()=>chapters[4].openNext());
    ========================================================= */
 chapters[5]=(()=>{
   const sec=$('ch5'), img=sec.querySelector('.bg'), cv=$('gl5'), fc=$('feather5'), fx=fc.getContext('2d'), btn=$('featherBtn');
-  const HORIZON=556, REST={x:1012,y:432}, TOUCH={x:990,y:668}, FLEN=420;
+  const HORIZON=556, BASE={x:985,y:640}, TOUCH={x:985,y:652}, FLEN=470;
   let R, scene, cam, mat, running=false, t0=0, landed=false, awakened=false, ripples=[], portal=0, f=null, featherPos={x:0,y:0,rot:0};
-  const sprite=(()=>{ // a long white-gold feather, drawn once
-    const c=document.createElement('canvas'), w=200, h=660; c.width=w; c.height=h; const g=c.getContext('2d'); const cx=w/2, L=600;
-    g.translate(cx,30);
-    const shaft=y=>Math.sin(y/L*2.6)*7;          // gentle curve of the rachis
-    const half=(y,side)=>{ const k=y/L; const base=side>0?60:48; return base*Math.pow(Math.sin(Math.PI*Math.min(1,k*1.08)),.75)*(k>.9?(1-(k-.9)*7):1); };
-    // vane body
-    for(const side of [-1,1]){ const path=new Path2D(); path.moveTo(shaft(0),0);
-      for(let y=0;y<=L*.97;y+=6) path.lineTo(shaft(y)+side*half(y,side),y-10-half(y,side)*.18);
-      path.lineTo(shaft(L*.97),L*.97); path.closePath();
-      const gg=g.createLinearGradient(0,0,side*46,0); gg.addColorStop(0,'rgba(255,255,255,.92)'); gg.addColorStop(.7,'rgba(252,246,232,.7)'); gg.addColorStop(1,'rgba(246,236,214,.25)');
-      g.save(); g.shadowColor='rgba(255,240,205,.9)'; g.shadowBlur=18; g.fillStyle=gg; g.fill(path); g.restore(); }
-    // vanes: hundreds of fine barbs sweeping toward the tip
-    for(const side of [-1,1]){
-      for(let y=6;y<L*.96;y+=1.6){
-        const len=half(y,side); if(len<=1) continue; const x0=shaft(y);
-        const a=.18+.35*Math.random(); g.strokeStyle=`rgba(255,${250-Math.random()*14|0},${236-Math.random()*20|0},${a})`; g.lineWidth=.9;
-        g.beginPath(); g.moveTo(x0,y); g.quadraticCurveTo(x0+side*len*.55,y-6,x0+side*len,y-16-len*.18); g.stroke();
-      }
-      // splits where barbs part
-      g.save(); g.globalCompositeOperation='destination-out';
-      for(let i=0;i<5;i++){ const y=90+Math.random()*(L*.7); const len=half(y,side); const x0=shaft(y); g.lineWidth=2.2;
-        g.beginPath(); g.moveTo(x0+side*len*.25,y); g.quadraticCurveTo(x0+side*len*.6,y-8,x0+side*len*1.05,y-18-len*.2); g.stroke(); }
-      g.restore();
-    }
-    // soft inner sheen
-    const sh=g.createLinearGradient(-40,0,40,0); sh.addColorStop(0,'rgba(255,255,255,0)'); sh.addColorStop(.5,'rgba(255,255,255,.35)'); sh.addColorStop(1,'rgba(255,255,255,0)');
-    g.globalCompositeOperation='lighter'; g.fillStyle=sh; g.fillRect(-40,0,80,L*.9); g.globalCompositeOperation='source-over';
-    // downy base
-    for(let i=0;i<70;i++){ const y=L*.86+Math.random()*L*.12, x0=shaft(y), d=(Math.random()-.5)*2; g.strokeStyle='rgba(255,255,255,.4)'; g.lineWidth=.8;
-      g.beginPath(); g.moveTo(x0,y); g.quadraticCurveTo(x0+d*16,y+10,x0+d*30,y+18+Math.random()*16); g.stroke(); }
-    // rachis and quill
-    g.lineCap='round'; g.strokeStyle='rgba(214,178,110,.95)'; g.lineWidth=2.6; g.beginPath(); g.moveTo(shaft(0),0);
-    for(let y=0;y<=L;y+=10) g.lineTo(shaft(y),y); g.stroke();
-    g.strokeStyle='rgba(255,252,240,.95)'; g.lineWidth=1; g.beginPath(); g.moveTo(shaft(0)-.6,2); for(let y=0;y<=L;y+=10) g.lineTo(shaft(y)-.6,y); g.stroke();
-    return {c,w,h,ax:cx,ay:30,L};
-  })();
+  // supplied artwork, black keyed out: the feather (base at 250,790, tip at 600,35 in the sprite) and its ripple disc (centre 730,150)
+  const FEA={img:new Image(),bx:250,by:790,tx:600,ty:35}; FEA.L=Math.hypot(FEA.tx-FEA.bx,FEA.ty-FEA.by); FEA.img.src='assets/feather.webp';
+  const RIP={img:new Image(),cx:730,cy:150,w:1460}; RIP.img.src='assets/ripple.webp';
+  let landT=0;
   const FS=`precision highp float;uniform sampler2D map;uniform vec2 uRes,uImg,uOff;uniform float uS,uTime,uPortal;uniform vec4 uRip[8];uniform vec2 uCenter;varying vec2 vUv;
     void main(){ vec2 sp=vec2(vUv.x*uRes.x,(1.-vUv.y)*uRes.y); vec2 ip=(sp-uOff)/uS;
       float edge=800.+(ip.x-700.)*.085; float water=smoothstep(${HORIZON}.,${HORIZON+8}.,ip.y)*smoothstep(728.,760.,ip.x)*(1.-smoothstep(edge-6.,edge+6.,ip.y));
@@ -1011,23 +981,33 @@ chapters[5]=(()=>{
     cv.addEventListener('pointermove',e=>{ cv.style.cursor = hitFeather(e.offsetX,e.offsetY)&&landed ? 'pointer':'default'; });
   }
   let ri=0; function ripple(x,y,amp){ if(!mat) return; const v=mat.uniforms.uRip.value[ri++%8]; v.set(x,y,mat.uniforms.uTime.value,amp); }
-  function hitFeather(x,y){ if(!f) return false; const s=f.s, dx=x-featherPos.x, dy=y-featherPos.y; return Math.abs(dx)<70*s+20 && Math.abs(dy)<FLEN*s*.55; }
+  function hitFeather(x,y){ if(!f||!featherPos.tx) return false; const {x:ax,y:ay,tx,ty}=featherPos, vx=tx-ax, vy=ty-ay, L2=vx*vx+vy*vy;
+    const u=clamp(((x-ax)*vx+(y-ay)*vy)/L2,0,1), d=Math.hypot(x-(ax+vx*u),y-(ay+vy*u)); return d<90*f.s+26; }
   function layout(){
     f=fit(img); const W=f.W,H=f.H; fc.width=W*Math.min(devicePixelRatio||1,2); fc.height=H*Math.min(devicePixelRatio||1,2); fx.setTransform(fc.width/W,0,0,fc.height/H,0,0);
     if(!R) return; R.setSize(W,H,false); mat.uniforms.uRes.value.set(W,H); mat.uniforms.uOff.value.set(f.ox,f.oy); mat.uniforms.uS.value=f.s;
   }
   function drawFeather(now){
     const s=f.s, k=reduce?1:clamp((now-t0)/7000,0,1), e=1-Math.pow(1-k,3);
-    let ix=REST.x+Math.sin(now/900)*70*(1-e), iy=lerp(REST.y-700,REST.y,e)+(k>=1?Math.sin(now/700)*6:0), rot=.2+Math.sin(now/1100)*.35*(1-e)+(k>=1?Math.sin(now/1300)*.03:0);
-    if(awakened){ const a=clamp((now-awT)/900,0,1); iy=lerp(iy,TOUCH.y-FLEN*.48,ease(a)); }
-    if(k>=1 && !landed){ landed=true; $('c5hint').textContent=t('c5ready'); Sound.play('soft'); }
-    const [x,y]=toScreen(f,ix,iy); featherPos={x,y,rot};
+    let bx=BASE.x+Math.sin(now/900)*80*(1-e), by=lerp(BASE.y-760,BASE.y,e)+(k>=1?Math.sin(now/800)*5:0);
+    let rot=Math.sin(now/1100)*.32*(1-e)+(k>=1?Math.sin(now/1500)*.025:0);
+    if(awakened){ const a=clamp((now-awT)/900,0,1); by=lerp(by,TOUCH.y+14,ease(a)); }
+    if(k>=1 && !landed){ landed=true; landT=now; $('c5hint').textContent=t('c5ready'); Sound.play('soft'); }
+    const [x,y]=toScreen(f,bx,by), sc=FLEN*s/FEA.L;
+    // tip position for hit testing and the keyboard button
+    const ang=Math.atan2(FEA.ty-FEA.by,FEA.tx-FEA.bx)+rot, tx=x+Math.cos(ang)*FEA.L*sc, ty=y+Math.sin(ang)*FEA.L*sc;
+    featherPos={x,y,tx,ty};
     fx.clearRect(0,0,f.W,f.H);
-    const sc=FLEN*s/sprite.L; fx.save(); fx.translate(x,y); fx.rotate(rot); fx.scale(sc,sc);
-    const glow=fx.createRadialGradient(0,0,0,0,0,360); glow.addColorStop(0,`rgba(255,246,220,${landed?.42+.12*Math.sin(now/600):.3})`); glow.addColorStop(1,'rgba(255,246,220,0)');
-    fx.fillStyle=glow; fx.beginPath(); fx.ellipse(0,0,180,360,0,0,6.28); fx.fill();
-    fx.drawImage(sprite.c,-sprite.ax,-sprite.L/2-sprite.ay); fx.restore();
-    btn.style.left=x+'px'; btn.style.top=y+'px'; btn.style.width=(110*s+30)+'px'; btn.style.height=(FLEN*s*.9)+'px';
+    // ripple disc grows in once the feather rests on the water, and spreads when it is touched
+    const rl=landed?clamp((now-landT)/1200,0,1):0, ra=awakened?clamp((now-awT)/2600,0,1):0;
+    if(RIP.img.complete && rl>0){
+      const [cx,cy]=toScreen(f,TOUCH.x,TOUCH.y), w=(420+ra*900)*s*(1+.025*Math.sin(now/700)), rs=w/RIP.w;
+      fx.save(); fx.globalAlpha=rl*(1-ra*.35); fx.translate(cx,cy); fx.scale(rs,rs*(1+ra*.3)); fx.drawImage(RIP.img,-RIP.cx,-RIP.cy); fx.restore();
+    }
+    if(FEA.img.complete){
+      fx.save(); fx.globalAlpha=landed?.92+.08*Math.sin(now/600):.95; fx.translate(x,y); fx.rotate(rot); fx.scale(sc,sc); fx.drawImage(FEA.img,-FEA.bx,-FEA.by); fx.restore();
+    }
+    const mx=(x+tx)/2, my=(y+ty)/2; btn.style.left=mx+'px'; btn.style.top=my+'px'; btn.style.width=Math.max(120,Math.abs(tx-x)+160*s)+'px'; btn.style.height=Math.max(160,Math.abs(ty-y)+40)+'px';
   }
   let awT=0;
   function awaken(){
