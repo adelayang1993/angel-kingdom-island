@@ -28,7 +28,7 @@
 html,body{height:100%;margin:0}
 body{background:var(--night);color:var(--ivory);font-family:var(--serif);overflow:hidden;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
 [hidden]{display:none!important}
-button{font:inherit;color:inherit}
+button{font:inherit;color:inherit;touch-action:manipulation}
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 
 /* ---------- shared chrome ---------- */
@@ -60,8 +60,9 @@ button{font:inherit;color:inherit}
 
 /* ---------- scenes ---------- */
 .stage{position:fixed;inset:0;overflow:hidden;isolation:isolate}
-.ch{position:absolute;inset:0;overflow:hidden;opacity:0;visibility:hidden;transition:opacity 1.2s ease,visibility 0s 1.2s}
-.ch.on{opacity:1;visibility:visible;transition:opacity 1.2s ease}
+.ch{position:absolute;inset:0;overflow:hidden;opacity:0;visibility:hidden;pointer-events:none;transition:opacity 1.2s ease,visibility 0s 1.2s}
+.ch.on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity 1.2s ease}
+.ch:not(.on) *{pointer-events:none!important}
 .ch.instant{transition:none!important}
 .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;max-width:none;transform-origin:50% 50%;will-change:transform}
 .gl{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -118,9 +119,10 @@ button{font:inherit;color:inherit}
 .themes .ic svg{width:30px;height:30px;stroke:#fff3d6;fill:none;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round}
 .themes b{font-weight:400;font-size:17px;letter-spacing:.16em}
 .themes small{font-family:var(--latin);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
-.themes .line{font-size:13.5px;letter-spacing:.1em;line-height:1.7;max-width:13em;text-align:center;opacity:0;transform:translateY(-4px);transition:all .5s;color:#fff6e4}
+.themes .line{pointer-events:none;font-size:13.5px;letter-spacing:.1em;line-height:1.7;max-width:13em;text-align:center;opacity:0;transform:translateY(-4px);transition:all .5s;color:#fff6e4}
 .themes button[aria-expanded="true"] .line{opacity:1;transform:none}
-.themes button:hover .ic,.themes button[aria-expanded="true"] .ic{background:rgba(255,236,190,.22);box-shadow:0 0 24px rgba(255,226,170,.7)}
+.themes button[aria-expanded="true"] .ic{background:rgba(255,236,190,.22);box-shadow:0 0 24px rgba(255,226,170,.7)}
+@media (hover:hover){.themes button:hover .ic{background:rgba(255,236,190,.22);box-shadow:0 0 24px rgba(255,226,170,.7)}}
 
 /* ---------- ch3 arches ---------- */
 .arch{position:absolute;z-index:4;border:0;background:none;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
