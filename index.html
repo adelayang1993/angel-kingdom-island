@@ -395,7 +395,7 @@ button{font:inherit;color:inherit}
       <div class="sub" data-t="c5s">喚醒內在的光</div>
       <div class="en">The Mirror of Your Soul</div>
       <p data-t-html="c5p">當所有身份與故事都安靜下來，<br>你是否還記得，自己原本的模樣？<br>輕觸水面，喚醒沉睡的光羽，<br>重新看見內在的光。</p>
-      <div class="hint" id="c5hint" data-t="c5hint">等待光羽落下，然後輕觸它</div>
+      <div class="hint" id="c5hint" data-t="c5hint">輕觸光羽，喚醒內在的光</div>
     </div>
   </section>
 
@@ -467,7 +467,7 @@ zh:{brand:'天使王國島',music:'音樂',sfx:'音效',close:'關閉',
  c4h:'五重帷幕',c4s:'逐層揭開幻象',c4p:'在層層幻象之下，藏著被遺忘的真實。<br>現在，讓我們一起揭開帷幕，<br>看見更深層的自己。',c4hint:'向兩側拖曳紗幕，或點擊光點',c4cta:'走向靈魂之鏡',
  veils:[['身份與物質','財富・名利','放下「我擁有的，就是我」'],['情緒與恐懼','恐懼・焦慮','放下「我必須害怕」'],['關係與執著','控制・比較','放下「我需要被認同」'],['信念與限制','限制・評價','放下「我做不到」'],['分離與遺忘','角色・身份','想起「我從來不曾與光分離」']],
  veilAll:'五重帷幕已揭開，前方就是靈魂之鏡',
- c5h:'靈魂之鏡',c5s:'喚醒內在的光',c5p:'當所有身份與故事都安靜下來，<br>你是否還記得，自己原本的模樣？<br>輕觸水面，喚醒沉睡的光羽，<br>重新看見內在的光。',c5hint:'等待光羽落下，然後輕觸它',c5ready:'輕觸光羽，喚醒內在的光',featherAria:'輕觸光羽，喚醒內在的光',
+ c5h:'靈魂之鏡',c5s:'喚醒內在的光',c5p:'當所有身份與故事都安靜下來，<br>你是否還記得，自己原本的模樣？<br>輕觸水面，喚醒沉睡的光羽，<br>重新看見內在的光。',c5hint:'輕觸光羽，喚醒內在的光',c5ready:'輕觸光羽，喚醒內在的光',featherAria:'輕觸光羽，喚醒內在的光',
  c6h:'天使之門',c6s:'靈魂覺醒，迎向真正的你',c6p:'當你願意放下那些不再屬於你的故事，<br>光，會帶你回到靈魂原本的地方。',c6hint:'長按門中的光球，開啟天使之門',gateLbl:'長按開啟<br>天使之門',gateAria:'長按開啟天使之門（鍵盤：按住空白鍵）',
  finH:'歡迎回到天使王國島',finP:'你從來沒有離開光。<br>那些故事只是暫時借住的雲，現在，你記起自己了。',again:'再走一次天使之門',restart:'從地球重新出發'},
 en:{brand:'Angel Kingdom Island',music:'Music',sfx:'Sound',close:'Close',
@@ -486,7 +486,7 @@ en:{brand:'Angel Kingdom Island',music:'Music',sfx:'Sound',close:'Close',
  c4h:'The Five Veils',c4s:'Unveil each illusion',c4p:'Beneath layer upon layer lies a forgotten truth.<br>Let us draw back the veils together<br>and meet a deeper self.',c4hint:'Drag the silk aside, or tap the light',c4cta:'Walk to the Soul Mirror',
  veils:[['Identity & Wealth','Wealth · Fame','Release “I am what I own”'],['Emotion & Fear','Fear · Anxiety','Release “I must be afraid”'],['Bonds & Attachment','Control · Comparison','Release “I need approval”'],['Belief & Limits','Limits · Judgement','Release “I can’t”'],['Separation & Forgetting','Roles · Identity','Remember “I was never apart from the light”']],
  veilAll:'All five veils are open. The Soul Mirror lies ahead.',
- c5h:'The Soul Mirror',c5s:'Awaken the light within',c5p:'When every identity and story falls quiet,<br>do you still remember who you were?<br>Touch the water, wake the sleeping feather,<br>and see your inner light again.',c5hint:'Wait for the feather to fall, then touch it',c5ready:'Touch the feather to awaken your light',featherAria:'Touch the feather to awaken your inner light',
+ c5h:'The Soul Mirror',c5s:'Awaken the light within',c5p:'When every identity and story falls quiet,<br>do you still remember who you were?<br>Touch the water, wake the sleeping feather,<br>and see your inner light again.',c5hint:'Touch the feather to awaken your light',c5ready:'Touch the feather to awaken your light',featherAria:'Touch the feather to awaken your inner light',
  c6h:'The Angel Gate',c6s:'Awaken and meet your true self',c6p:'When you are ready to set down the stories that are no longer yours,<br>the light will carry you home.',c6hint:'Press and hold the light in the doorway',gateLbl:'Hold to open<br>the Angel Gate',gateAria:'Press and hold to open the Angel Gate (keyboard: hold Space)',
  finH:'Welcome home to Angel Kingdom Island',finP:'You never left the light.<br>Those stories were only clouds passing through. Now you remember.',again:'Open the gate again',restart:'Start again from Earth'}
 };
@@ -988,24 +988,24 @@ chapters[5]=(()=>{
     if(!R) return; R.setSize(W,H,false); mat.uniforms.uRes.value.set(W,H); mat.uniforms.uOff.value.set(f.ox,f.oy); mat.uniforms.uS.value=f.s;
   }
   function drawFeather(now){
-    const s=f.s, k=reduce?1:clamp((now-t0)/7000,0,1), e=1-Math.pow(1-k,3);
-    let bx=BASE.x+Math.sin(now/900)*80*(1-e), by=lerp(BASE.y-760,BASE.y,e)+(k>=1?Math.sin(now/800)*5:0);
-    let rot=Math.sin(now/1100)*.32*(1-e)+(k>=1?Math.sin(now/1500)*.025:0);
+    // the feather already rests on the lake, rising and settling with the water
+    const s=f.s, still=reduce?0:1, tt=(now-t0)/1000;
+    let bx=BASE.x+Math.sin(tt*.55)*4*still, by=BASE.y+(Math.sin(tt*1.1)*6+Math.sin(tt*.43)*3)*still;
+    let rot=(Math.sin(tt*.7)*.03+Math.sin(tt*.31)*.015)*still;
     if(awakened){ const a=clamp((now-awT)/900,0,1); by=lerp(by,TOUCH.y+14,ease(a)); }
-    if(k>=1 && !landed){ landed=true; landT=now; $('c5hint').textContent=t('c5ready'); Sound.play('soft'); }
     const [x,y]=toScreen(f,bx,by), sc=FLEN*s/FEA.L;
     // tip position for hit testing and the keyboard button
     const ang=Math.atan2(FEA.ty-FEA.by,FEA.tx-FEA.bx)+rot, tx=x+Math.cos(ang)*FEA.L*sc, ty=y+Math.sin(ang)*FEA.L*sc;
     featherPos={x,y,tx,ty};
     fx.clearRect(0,0,f.W,f.H);
     // ripple disc grows in once the feather rests on the water, and spreads when it is touched
-    const rl=landed?clamp((now-landT)/1200,0,1):0, ra=awakened?clamp((now-awT)/2600,0,1):0;
-    if(RIP.img.complete && rl>0){
-      const [cx,cy]=toScreen(f,TOUCH.x,TOUCH.y), w=(420+ra*900)*s*(1+.025*Math.sin(now/700)), rs=w/RIP.w;
-      fx.save(); fx.globalAlpha=rl*(1-ra*.35); fx.translate(cx,cy); fx.scale(rs,rs*(1+ra*.3)); fx.drawImage(RIP.img,-RIP.cx,-RIP.cy); fx.restore();
+    const rl=clamp((now-landT)/3200,0,1), rlE=rl*rl*(3-2*rl), ra=awakened?clamp((now-awT)/2600,0,1):0;
+    if(RIP.img.complete && rlE>0){
+      const [cx,cy]=toScreen(f,TOUCH.x,TOUCH.y), w=(360+60*rlE+ra*900)*s*(1+.025*Math.sin(now/900)), rs=w/RIP.w;
+      fx.save(); fx.globalAlpha=rlE*(1-ra*.35); fx.translate(cx,cy); fx.scale(rs,rs*(1+ra*.3)); fx.drawImage(RIP.img,-RIP.cx,-RIP.cy); fx.restore();
     }
     if(FEA.img.complete){
-      fx.save(); fx.globalAlpha=landed?.92+.08*Math.sin(now/600):.95; fx.translate(x,y); fx.rotate(rot); fx.scale(sc,sc); fx.drawImage(FEA.img,-FEA.bx,-FEA.by); fx.restore();
+      fx.save(); fx.globalAlpha=.94+.06*Math.sin(now/700); fx.translate(x,y); fx.rotate(rot); fx.scale(sc,sc); fx.drawImage(FEA.img,-FEA.bx,-FEA.by); fx.restore();
     }
     const mx=(x+tx)/2, my=(y+ty)/2; btn.style.left=mx+'px'; btn.style.top=my+'px'; btn.style.width=Math.max(120,Math.abs(tx-x)+160*s)+'px'; btn.style.height=Math.max(160,Math.abs(ty-y)+40)+'px';
   }
@@ -1027,9 +1027,9 @@ chapters[5]=(()=>{
     if(!R && portal>0) fc.style.filter=`brightness(${1+portal})`;
     requestAnimationFrame(loop);
   }
-  btn.addEventListener('click',()=>{ if(!landed){ t0=performance.now()-7000; } setTimeout(awaken,90); });
+  btn.addEventListener('click',awaken);
   return { layout,
-    enter(){ init(); landed=awakened=false; portal=0; t0=performance.now(); $('c5hint').textContent=t('c5hint'); $('bloom').classList.remove('go'); layout(); running=true; requestAnimationFrame(loop); },
+    enter(){ init(); landed=true; awakened=false; portal=0; t0=performance.now(); landT=t0+(reduce?-4000:700); $('c5hint').textContent=t('c5ready'); $('bloom').classList.remove('go'); layout(); running=true; requestAnimationFrame(loop); },
     leave(){ setTimeout(()=>{ if(cur!==5) running=false; },1300); } };
 })();
 
